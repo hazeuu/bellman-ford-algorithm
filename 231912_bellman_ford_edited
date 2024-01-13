@@ -10,6 +10,7 @@ const ll INF = 1e18;
 
 int n, m, s, mark[MaxN];
 ll dist[MaxN];
+vector<int> parent(MaxN);
 
 class Edge{
     public:
@@ -19,6 +20,15 @@ class Edge{
 };
 
 vector<Edge> edges;
+
+void printPath(int j) {
+    if (j == s) {
+        cout << j << " ";
+        return;
+    }
+    printPath(parent[j]);
+    cout << j << " ";
+}
 
 void Bellman_Ford(){
     fill(dist + 1, dist + n + 1, INF);
@@ -30,12 +40,15 @@ void Bellman_Ford(){
                 // Tại lần cập nhật thứ n, nếu đỉnh vẫn được cập nhật nghĩa là nó thuộc chu trình âm và ta đánh dấu nó 
                 if(i == n) mark[e.v] = 1;
                 dist[e.v] = dist[e.u] + e.weight;
+                parent[e.v] = e.u;
             }
         }
     }
 }
 
 int main(){
+    freopen("Bellmanford.inp","r",stdin);
+    freopen("Bellmanford.out","w",stdout);
     cin >> n >> m >> s;
     for(int i = 1; i <= m; i++){
         int u, v, weight;
@@ -43,11 +56,17 @@ int main(){
         edges.push_back(Edge(u, v, weight));
     }
     Bellman_Ford();
-    for(int i = 1; i <= n; i++)
-    if(!mark[i]){ 
-        if(dist[i] == INF) cout << "-1" << endl;
-        else cout << dist[i] << endl;
-    } else cout << "-2" << endl;
-
+    for(int i = 1; i <= n; i++) {
+        cout << "=== Dinh " << i << endl;
+        if(mark[i]) cout <<-2<< endl;
+        else 
+             if(dist[i] == INF) cout << "Khong co duong di tu dinh " << s << " den dinh " << i << endl;
+             else {
+                cout << "d( " << s << " -> " << i << " ) = " << dist[i] << endl;
+                cout << "Duong di: ";
+                printPath(i);
+                cout << endl;
+            }
+    }
     return 0;
 }
